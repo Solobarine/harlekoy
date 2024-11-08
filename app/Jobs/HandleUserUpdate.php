@@ -27,7 +27,10 @@ class HandleUserUpdate implements ShouldQueue
         $api = "";
         $payload = [
             'batches' => [
-                'subscribers' => $this->updatedUsers
+                [
+
+                    'subscribers' => $this->updatedUsers
+                ]
             ]
         ];
 
