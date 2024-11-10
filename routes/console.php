@@ -11,9 +11,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 // Get Updates from Cache
-$updates = Cache::has('user_updates') && Cache::get('user_updates')->count() > 0 ? Cache::pull('user_updates') : [];
+$updates = Cache::has('user_updates') ? Cache::pull('user_updates') : [];
 
 // Schedule Job
-Schedule::job(new HandleUserUpdate($updates))->hourly()->when(function ($updates) {
-    count($updates) > 0;
-});
+Schedule::job(new HandleUserUpdate($updates))->hourly();
