@@ -9,18 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    protected static function boot()
+    protected static function booted()
     {
         parent::boot();
 
         static::updated(function ($user) {
-            self::queueUserUpdate($user);
+            $user->queueUserUpdate($user);
         });
     }
 
@@ -71,10 +72,10 @@ class User extends Authenticatable
         }
 
         // Store in cache until the batch has 1000 updates
-        Cache::add('user_updates', $data);
-
+        Cache::put('user_updates', $data);
+        Log::info("Saved User Update to Cache: {$user->id}");
         // Dispatch job if batch has 1000 updates
-        if (Cache::get('user_updates')->count() >= 1000) {
+        if (count(Cache::get('user_updates')) >= 1000) {
             $updates = Cache::pull('user_updates');
             HandleUserUpdate::dispatch($updates);
         }
