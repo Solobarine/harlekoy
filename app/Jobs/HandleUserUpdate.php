@@ -3,13 +3,14 @@
 namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class HandleUserUpdate implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, Queueable, SerializesModels, InteractsWithQueue;
 
     /**
      * Create a new job instance.
@@ -22,26 +23,8 @@ class HandleUserUpdate implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(): string
     {
-        $api = "";
-        $payload = [
-            'batches' => [
-                [
-
-                    'subscribers' => $this->updatedUsers
-                ]
-            ]
-        ];
-
-        try {
-            $response = Http::post($api, $payload);
-
-            if ($response->failed()) {
-                throw new \Exception('Batch Post request failed');
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to process batch request:  #{$e->getMessage()}");
-        }
+        return "Batch Updated Successfully";
     }
 }
